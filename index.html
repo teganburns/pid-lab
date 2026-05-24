@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PID Lab</title>
+    <meta name="description" content="An interactive local web app for learning and tuning PID control loops.">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="pid-shell" data-pid-lab>
+      <header class="pid-header">
+        <div class="pid-title">
+          <div class="pid-mark" aria-hidden="true">
+            <svg class="pid-icon" viewBox="0 0 24 24"><path d="M3 12h4l2-7 4 14 2-7h6"></path></svg>
+          </div>
+          <h1>PID Lab</h1>
+        </div>
+        <nav class="pid-nav" aria-label="PID Lab sections">
+          <a href="#learn">Learn</a>
+          <a href="#visualize">Visualize</a>
+          <a href="#tune">Tune</a>
+        </nav>
+      </header>
+
+      <section class="pid-panel" id="learn" aria-labelledby="learn-heading">
+        <div class="pid-panel-head">
+          <div>
+            <h2 id="learn-heading">Understand PID</h2>
+            <p>PID control combines three actions to guide process output toward a target setpoint.</p>
+          </div>
+        </div>
+
+        <div class="term-grid">
+          <article class="term-card term-p">
+            <div class="term-title"><span>P</span><h3>P - Proportional</h3></div>
+            <svg class="mini-chart" viewBox="0 0 260 150" role="img" aria-label="Proportional response curve">
+              <path d="M30 124H235M30 124V22" class="axis"></path>
+              <path d="M30 46H235" class="setpoint"></path>
+              <text x="178" y="40">Setpoint</text><text x="9" y="30">PV</text><text x="200" y="143">Time</text>
+              <path d="M30 124 C58 119, 67 79, 92 62 C115 47, 142 59, 235 59" class="curve"></path>
+            </svg>
+            <p>Responds to the current error. More Kp usually reduces rise time, but too much can cause overshoot or oscillation.</p>
+          </article>
+
+          <article class="term-card term-i">
+            <div class="term-title"><span>I</span><h3>I - Integral</h3></div>
+            <svg class="mini-chart" viewBox="0 0 260 150" role="img" aria-label="Integral response curve">
+              <path d="M30 124H235M30 124V22" class="axis"></path>
+              <path d="M30 46H235" class="setpoint"></path>
+              <text x="178" y="40">Setpoint</text><text x="9" y="30">PV</text><text x="200" y="143">Time</text>
+              <path d="M30 124 C52 113, 59 88, 82 76 C104 64, 105 54, 132 49 C158 44, 179 46, 235 46" class="curve"></path>
+            </svg>
+            <p>Accumulates past error and removes steady-state offset. Too much Ki can increase overshoot and settling time.</p>
+          </article>
+
+          <article class="term-card term-d">
+            <div class="term-title"><span>D</span><h3>D - Derivative</h3></div>
+            <svg class="mini-chart" viewBox="0 0 260 150" role="img" aria-label="Derivative response curve">
+              <path d="M30 124H235M30 124V22" class="axis"></path>
+              <path d="M30 46H235" class="setpoint"></path>
+              <text x="178" y="40">Setpoint</text><text x="9" y="30">PV</text><text x="200" y="143">Time</text>
+              <path d="M30 124 C55 92, 65 52, 98 45 C130 38, 133 59, 165 59 C190 59, 207 55, 235 55" class="curve"></path>
+            </svg>
+            <p>Predicts where the error is heading by reacting to rate of change. More Kd can damp overshoot but can amplify noise.</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="workbench">
+        <section class="pid-panel" id="visualize" aria-labelledby="visualize-heading">
+          <div class="pid-panel-head chart-head">
+            <h2 id="visualize-heading">Response</h2>
+            <label>View
+              <select id="chart-view">
+                <option value="response">Time Response</option>
+                <option value="error">Error Signal</option>
+                <option value="control">Control Effort</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="legend" aria-label="Chart legend">
+            <span class="setpoint-line">Setpoint</span>
+            <span class="pv-line">Process Variable (PV)</span>
+            <span class="control-line">Control Effort</span>
+          </div>
+
+          <canvas id="response-chart" width="960" height="360" aria-label="PID response chart"></canvas>
+
+          <div class="metrics" aria-label="Simulation metrics">
+            <div><span>Rise Time (10-90%)</span><strong data-metric="rise">--</strong></div>
+            <div><span>Overshoot</span><strong data-metric="overshoot">--</strong></div>
+            <div><span>Steady-State Error</span><strong data-metric="error">--</strong></div>
+            <div><span>Settling Time (+/-2%)</span><strong data-metric="settling">--</strong></div>
+          </div>
+
+          <div class="loop-diagram" aria-label="PID feedback loop">
+            <h3>How the PID loop works</h3>
+            <div class="loop-row">
+              <div class="loop-box">Setpoint<small>r(t)</small></div>
+              <div class="loop-plus">+</div>
+              <div class="loop-sum">e</div>
+              <div class="loop-arrow">-&gt;</div>
+              <div class="loop-box controller">PID Controller<small>u = Kp e + Ki integral(e) + Kd de/dt</small></div>
+              <div class="loop-arrow">-&gt;</div>
+              <div class="loop-box plant">Plant Process<small>G(s)</small></div>
+              <div class="loop-arrow">-&gt;</div>
+              <div class="loop-box plant">Output<small>y(t)</small></div>
+            </div>
+            <p>The controller compares the setpoint to the measured output, computes a control signal, and drives the plant. The output is measured and fed back into the next error calculation.</p>
+          </div>
+        </section>
+
+        <aside class="pid-panel controls-panel" id="tune" aria-labelledby="tune-heading">
+          <div class="pid-panel-head control-head">
+            <h2 id="tune-heading">Tuning Controls</h2>
+            <div class="scenarios" aria-label="Scenario presets">
+              <button class="is-active" type="button" data-preset="stable">Stable</button>
+              <button type="button" data-preset="overshoot">Overshoot</button>
+              <button type="button" data-preset="sluggish">Sluggish</button>
+              <button type="button" data-preset="disturbance">Disturbance</button>
+            </div>
+          </div>
+
+          <div class="controls">
+            <div class="control"><label for="kp">Kp <small>Proportional Gain</small></label><input id="kp" type="range" min="0" max="10" step="0.05" value="2" data-param="kp"><input type="number" min="0" max="10" step="0.05" value="2" data-param="kp" aria-label="Kp value"></div>
+            <div class="control"><label for="ki">Ki <small>Integral Gain</small></label><input id="ki" type="range" min="0" max="5" step="0.05" value="0.5" data-param="ki"><input type="number" min="0" max="5" step="0.05" value="0.5" data-param="ki" aria-label="Ki value"></div>
+            <div class="control"><label for="kd">Kd <small>Derivative Gain</small></label><input id="kd" type="range" min="0" max="2" step="0.01" value="0.2" data-param="kd"><input type="number" min="0" max="2" step="0.01" value="0.2" data-param="kd" aria-label="Kd value"></div>
+            <div class="control-group">
+              <div class="control"><label for="setpoint">Setpoint <small>Target value</small></label><input id="setpoint" type="range" min="0.2" max="2" step="0.05" value="1" data-param="setpoint"><input type="number" min="0.2" max="2" step="0.05" value="1" data-param="setpoint" aria-label="Setpoint value"></div>
+              <div class="control"><label for="disturbance">Disturbance <small>Step at t = 15 s</small></label><input id="disturbance" type="range" min="-1" max="1" step="0.05" value="0.3" data-param="disturbance"><input type="number" min="-1" max="1" step="0.05" value="0.3" data-param="disturbance" aria-label="Disturbance value"></div>
+              <div class="control"><label for="damping">Plant Damping <small>Higher means more damping</small></label><input id="damping" type="range" min="0.1" max="2" step="0.05" value="0.7" data-param="damping"><input type="number" min="0.1" max="2" step="0.05" value="0.7" data-param="damping" aria-label="Plant damping value"></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="primary" type="button" data-action="toggle"><span data-run-icon>Pause</span></button>
+            <button type="button" data-action="reset">Reset</button>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="status-bar">
+        <span>Sample Time: 100 ms</span>
+        <span>Simulation Time: <span data-sim-time>0.0 s</span></span>
+        <span>Status: <span class="status-dot" data-status-dot></span><span data-status-text>Running</span></span>
+        <span data-tip>Tip: Increase Kp to reduce rise time. Add Ki to remove steady-state error. Add Kd to reduce overshoot.</span>
+      </footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

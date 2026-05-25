@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PID Lab</title>
     <meta name="description" content="An interactive local web app for learning and tuning PID control loops.">
-    <link rel="stylesheet" href="styles.css?v=20260525">
+    <link rel="stylesheet" href="styles.css?v=20260525-game">
   </head>
   <body>
     <main class="pid-shell" data-pid-lab>
@@ -18,6 +18,7 @@
         </div>
         <nav class="pid-nav" aria-label="PID Lab sections">
           <a href="#learn">Learn</a>
+          <a href="#game">Game</a>
           <a href="#visualize">Visualize</a>
           <a href="#tune">Tune</a>
         </nav>
@@ -79,6 +80,62 @@
             <strong>PD - Proportional-Derivative</strong>
             <p>A controller using P and D without integral action. PD responds quickly and adds damping, but it may leave a steady offset if the plant needs integral correction.</p>
           </article>
+        </div>
+      </section>
+
+      <section class="pid-panel game-panel" id="game" aria-labelledby="game-heading">
+        <div class="pid-panel-head game-head">
+          <div>
+            <h2 id="game-heading">PID Tuning Game</h2>
+            <p>Pass each challenge by tuning the available gains until the response meets the target metrics.</p>
+          </div>
+          <div class="level-rail" aria-label="Game levels">
+            <button class="is-active" type="button" data-game-level="0">P</button>
+            <button type="button" data-game-level="1">PI</button>
+            <button type="button" data-game-level="2">PD</button>
+            <button type="button" data-game-level="3">PID</button>
+          </div>
+        </div>
+
+        <div class="game-layout">
+          <div class="game-response">
+            <div class="game-mission">
+              <div>
+                <h3 data-game-title>Level 1: P Control</h3>
+                <p data-game-brief>Use proportional gain to make the loop respond quickly without letting overshoot get out of hand.</p>
+              </div>
+              <div class="game-fixed" aria-label="Fixed challenge settings">
+                <span data-game-fixed="setpoint">SP 1.00</span>
+                <span data-game-fixed="disturbance">Disturbance 0.00</span>
+                <span data-game-fixed="damping">Damping 0.95</span>
+              </div>
+            </div>
+
+            <canvas id="game-chart" width="960" height="320" aria-label="Game challenge response chart"></canvas>
+
+            <div class="game-targets" aria-label="Game target metrics">
+              <div data-game-card="rise"><span>Rise Time</span><strong data-game-metric="rise">--</strong><small data-game-target="rise">Target <= 2.20 s</small></div>
+              <div data-game-card="overshoot"><span>Overshoot</span><strong data-game-metric="overshoot">--</strong><small data-game-target="overshoot">Target <= 35.0%</small></div>
+              <div data-game-card="error"><span>Steady Error</span><strong data-game-metric="error">--</strong><small data-game-target="error">Target <= 18.0%</small></div>
+              <div data-game-card="settling"><span>Settling Time</span><strong data-game-metric="settling">--</strong><small data-game-target="settling">No target</small></div>
+            </div>
+          </div>
+
+          <aside class="game-tuner" aria-label="Game tuning controls">
+            <h3>Tune This Level</h3>
+            <p data-game-constraints>Only Kp is unlocked. Ki and Kd stay pinned at 0.00.</p>
+            <div class="game-controls">
+              <div class="game-control"><label for="game-kp">Kp <small>Proportional</small></label><input id="game-kp" type="range" min="0" max="10" step="0.05" value="1" data-game-param="kp"><input type="number" min="0" max="10" step="0.05" value="1" data-game-param="kp" aria-label="Game Kp value"></div>
+              <div class="game-control"><label for="game-ki">Ki <small>Integral</small></label><input id="game-ki" type="range" min="0" max="5" step="0.05" value="0" data-game-param="ki"><input type="number" min="0" max="5" step="0.05" value="0" data-game-param="ki" aria-label="Game Ki value"></div>
+              <div class="game-control"><label for="game-kd">Kd <small>Derivative</small></label><input id="game-kd" type="range" min="0" max="2" step="0.01" value="0" data-game-param="kd"><input type="number" min="0" max="2" step="0.01" value="0" data-game-param="kd" aria-label="Game Kd value"></div>
+            </div>
+            <div class="game-feedback" data-game-feedback>Adjust Kp, then check your tune against the target metrics.</div>
+            <div class="game-actions">
+              <button class="primary" type="button" data-game-action="check">Check Tune</button>
+              <button type="button" data-game-action="reset">Reset Level</button>
+              <button type="button" data-game-action="next" disabled>Next Level</button>
+            </div>
+          </aside>
         </div>
       </section>
 

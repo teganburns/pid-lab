@@ -9,6 +9,7 @@ Visit the app at https://teganburns.github.io/pid-lab/
 The app includes:
 
 - P, I, and D explanation cards
+- A four-level PID tuning game for P, PI, PD, and PID control
 - A live response chart for setpoint, process variable, error, and control effort
 - Presets for stable, overshoot, sluggish, and disturbance-recovery scenarios
 - Sliders and numeric inputs for Kp, Ki, Kd, setpoint, disturbance, and plant damping

@@ -54,6 +54,7 @@ select {
 .pid-nav,
 .term-title,
 .legend,
+.level-rail,
 .status-bar span {
   display: flex;
   align-items: center;
@@ -422,6 +423,260 @@ select {
   text-align: center;
 }
 
+.game-head {
+  align-items: flex-start;
+}
+
+.level-rail {
+  flex-wrap: wrap;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.level-rail button {
+  min-width: 58px;
+  min-height: 36px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 850;
+}
+
+.level-rail button:last-child {
+  border-right: 0;
+}
+
+.level-rail .is-active {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.level-rail .is-passed:not(.is-active) {
+  background: #f0fbf3;
+  color: var(--green);
+}
+
+.level-rail button:disabled {
+  cursor: not-allowed;
+  color: #8a95a3;
+  background: var(--surface);
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.75fr);
+  gap: 16px;
+  padding: 18px;
+}
+
+.game-response,
+.game-tuner {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.game-mission {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 16px 0;
+}
+
+.game-mission h3,
+.game-tuner h3 {
+  margin: 0;
+}
+
+.game-fixed {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.game-fixed span {
+  min-height: 30px;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+#game-chart {
+  display: block;
+  width: calc(100% - 32px);
+  height: 300px;
+  margin: 14px 16px 10px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.game-targets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.game-targets div {
+  min-height: 82px;
+  padding: 12px;
+  border-right: 1px solid var(--line);
+  background: #ffffff;
+}
+
+.game-targets div:last-child {
+  border-right: 0;
+}
+
+.game-targets .is-pass {
+  background: #f3fbf5;
+}
+
+.game-targets .is-fail {
+  background: #fff7ed;
+}
+
+.game-targets span,
+.game-targets small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.game-targets strong {
+  display: block;
+  margin: 3px 0;
+  color: var(--ink);
+  font-size: 1.14rem;
+}
+
+.game-tuner {
+  align-self: start;
+  padding: 16px;
+}
+
+.game-controls {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.game-control {
+  display: grid;
+  grid-template-columns: minmax(80px, 0.8fr) minmax(92px, 1fr) minmax(70px, 82px);
+  gap: 10px;
+  align-items: center;
+}
+
+.game-control > * {
+  min-width: 0;
+}
+
+.game-control label {
+  display: grid;
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.game-control label small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.game-control input[type="range"] {
+  width: 100%;
+  accent-color: var(--blue);
+}
+
+.game-control input[type="number"] {
+  width: 100%;
+  max-width: 82px;
+  min-height: 36px;
+  justify-self: end;
+  padding: 8px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.game-control input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.game-feedback {
+  min-height: 58px;
+  margin-top: 18px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.game-feedback.is-pass {
+  border-color: #b7e2c4;
+  background: #f3fbf5;
+  color: var(--green);
+}
+
+.game-feedback.is-fail {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #b45309;
+}
+
+.game-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.game-actions button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 850;
+}
+
+.game-actions .primary {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #ffffff;
+}
+
+.game-actions button:disabled {
+  cursor: not-allowed;
+  color: #8a95a3;
+  background: var(--surface);
+}
+
+.game-actions button:first-child {
+  grid-column: 1 / -1;
+}
+
 .controls-panel {
   position: sticky;
   top: 14px;
@@ -582,6 +837,7 @@ input:focus {
 
 @media (max-width: 1180px) {
   .workbench,
+  .game-layout,
   .term-grid,
   .shorthand-grid {
     grid-template-columns: 1fr;
@@ -625,6 +881,49 @@ input:focus {
 
   .term-grid {
     gap: 10px;
+    padding: 12px;
+  }
+
+  .game-head,
+  .game-mission {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .game-layout {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .game-fixed {
+    justify-content: flex-start;
+  }
+
+  #game-chart {
+    width: calc(100% - 20px);
+    height: 190px;
+    margin: 10px 10px 8px;
+  }
+
+  .game-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0 10px 10px;
+  }
+
+  .game-targets div {
+    min-height: 66px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .game-targets div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .game-targets div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .game-tuner {
     padding: 12px;
   }
 
@@ -750,20 +1049,24 @@ input:focus {
   }
 
   .control,
+  .game-control,
   .actions {
     grid-template-columns: minmax(62px, 0.72fr) minmax(120px, 1.5fr) minmax(66px, 0.62fr);
     gap: 8px;
   }
 
-  .control label {
+  .control label,
+  .game-control label {
     font-size: 0.9rem;
   }
 
-  .control label small {
+  .control label small,
+  .game-control label small {
     display: none;
   }
 
-  .control input[type="number"] {
+  .control input[type="number"],
+  .game-control input[type="number"] {
     min-height: 34px;
     padding: 6px 7px;
     font-size: 0.9rem;
@@ -836,6 +1139,10 @@ input:focus {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .game-targets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .metrics div,
   .metrics div:nth-child(odd) {
     min-height: 48px;
@@ -861,7 +1168,16 @@ input:focus {
     gap: 8px;
   }
 
+  .game-control {
+    grid-template-columns: minmax(62px, 0.72fr) minmax(108px, 1fr) 62px;
+    gap: 8px;
+  }
+
   .control label {
+    font-size: 0.82rem;
+  }
+
+  .game-control label {
     font-size: 0.82rem;
   }
 

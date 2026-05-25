@@ -129,8 +129,9 @@
               <div class="game-control"><label for="game-ki">Ki <small>Integral</small></label><input id="game-ki" type="range" min="0" max="5" step="0.05" value="0" data-game-param="ki"><input type="number" min="0" max="5" step="0.05" value="0" data-game-param="ki" aria-label="Game Ki value"></div>
               <div class="game-control"><label for="game-kd">Kd <small>Derivative</small></label><input id="game-kd" type="range" min="0" max="2" step="0.01" value="0" data-game-param="kd"><input type="number" min="0" max="2" step="0.01" value="0" data-game-param="kd" aria-label="Game Kd value"></div>
             </div>
-            <div class="game-feedback" data-game-feedback>Adjust Kp, then check your tune against the target metrics.</div>
+            <div class="game-feedback" data-game-feedback>Adjust Kp, run a test, then check your tune against the target metrics.</div>
             <div class="game-actions">
+              <button class="primary" type="button" data-game-action="test">Test Run</button>
               <button class="primary" type="button" data-game-action="check">Check Tune</button>
               <button type="button" data-game-action="reset">Reset Level</button>
               <button type="button" data-game-action="next" disabled>Next Level</button>

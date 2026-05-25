@@ -28,6 +28,7 @@
   const gameBrief = root.querySelector("[data-game-brief]");
   const gameConstraints = root.querySelector("[data-game-constraints]");
   const gameFeedback = root.querySelector("[data-game-feedback]");
+  const gameTestButton = root.querySelector("[data-game-action='test']");
   const gameCheckButton = root.querySelector("[data-game-action='check']");
   const gameResetButton = root.querySelector("[data-game-action='reset']");
   const gameNextButton = root.querySelector("[data-game-action='next']");
@@ -72,6 +73,7 @@
     disturbance: "Tip: Integral action helps recover after a load disturbance, but too much Ki can ring.",
   };
   const gameStorageKey = "pidLabGameProgress";
+  const gamePlaybackMs = 4500;
   const gameLevels = [
     {
       id: "P",
@@ -122,6 +124,9 @@
   let gameParams = {};
   let gameSamples = [];
   let gameMetrics = {};
+  let gameHasTestRun = false;
+  let gamePlaybackFrame = 0;
+  let gamePlaybackStart = 0;
 
   function createPlant() {
     return { time: 0, output: 0, velocity: 0, integral: 0, previousError: 0 };
@@ -516,7 +521,27 @@
     });
   }
 
-  function renderGame(showResult = false) {
+  function cancelGamePlayback() {
+    if (gamePlaybackFrame) {
+      window.cancelAnimationFrame(gamePlaybackFrame);
+      gamePlaybackFrame = 0;
+    }
+    gamePlaybackStart = 0;
+    if (gameTestButton) gameTestButton.disabled = false;
+  }
+
+  function setGameMetricText(revealMetrics) {
+    gameMetric.rise.textContent = revealMetrics ? formatSeconds(gameMetrics.rise) : "--";
+    gameMetric.overshoot.textContent = revealMetrics ? formatPercent(gameMetrics.overshoot) : "--";
+    gameMetric.error.textContent = revealMetrics ? formatPercent(gameMetrics.error) : "--";
+    gameMetric.settling.textContent = revealMetrics ? formatSeconds(gameMetrics.settling) : "--";
+  }
+
+  function initialGameSamples(source) {
+    return [{ time: 0, setpoint: 0, output: 0, error: 0, control: 0 }, { time: stepTime, setpoint: source.setpoint, output: 0, error: source.setpoint, control: 0 }];
+  }
+
+  function renderGame(showResult = false, revealMetrics = gameHasTestRun, displaySamples = null) {
     if (!gameCanvas || !gameContext) return;
 
     const level = currentGameLevel();
@@ -531,10 +556,7 @@
     gameFixed.disturbance.textContent = `Disturbance ${source.disturbance.toFixed(2)}`;
     gameFixed.damping.textContent = `Damping ${source.damping.toFixed(2)}`;
 
-    gameMetric.rise.textContent = formatSeconds(gameMetrics.rise);
-    gameMetric.overshoot.textContent = formatPercent(gameMetrics.overshoot);
-    gameMetric.error.textContent = formatPercent(gameMetrics.error);
-    gameMetric.settling.textContent = formatSeconds(gameMetrics.settling);
+    setGameMetricText(revealMetrics);
 
     gameTarget.rise.textContent = formatGameTarget("rise", level.target.rise);
     gameTarget.overshoot.textContent = formatGameTarget("overshoot", level.target.overshoot);
@@ -550,24 +572,64 @@
     gameFeedback.classList.toggle("is-fail", showResult && !isGamePassing());
     if (!showResult) {
       gameFeedback.textContent = hasPassed
-        ? "Level passed. You can keep experimenting or move on."
-        : "Tune the unlocked gains, then check your response against the targets.";
+        ? "Level passed. You can keep experimenting, run another test, or move on."
+        : gameHasTestRun
+          ? "Review the test run, adjust if needed, then check your tune."
+          : "Tune the unlocked gains, then use Test Run to watch the response over time.";
     }
     gameNextButton.disabled = gameLevelIndex >= gameLevels.length - 1 || !hasPassed;
-    drawResponseChart(gameCanvas, gameContext, gameSamples, source, getSeries("response"), "PV", source.disturbance !== 0);
+    drawResponseChart(gameCanvas, gameContext, displaySamples || initialGameSamples(source), source, getSeries("response"), "PV", source.disturbance !== 0);
+  }
+
+  function startGameTestRun() {
+    cancelGamePlayback();
+    const source = buildGameSource();
+    gameSamples = simulateResponse(source);
+    gameMetrics = computeMetrics(gameSamples, source);
+    gameHasTestRun = false;
+    setGameMetricText(false);
+    updateGameMetricCards(false);
+    gameFeedback.classList.remove("is-pass", "is-fail");
+    gameFeedback.textContent = "Test running. Watch how the response moves toward the setpoint.";
+    gameTestButton.disabled = true;
+
+    function step(timestamp) {
+      if (!gamePlaybackStart) gamePlaybackStart = timestamp;
+      const progress = Math.min(1, (timestamp - gamePlaybackStart) / gamePlaybackMs);
+      const sampleCount = Math.max(2, Math.floor(progress * (gameSamples.length - 1)) + 1);
+      drawResponseChart(gameCanvas, gameContext, gameSamples.slice(0, sampleCount), source, getSeries("response"), "PV", source.disturbance !== 0);
+
+      if (progress < 1) {
+        gamePlaybackFrame = window.requestAnimationFrame(step);
+        return;
+      }
+
+      gamePlaybackFrame = 0;
+      gamePlaybackStart = 0;
+      gameHasTestRun = true;
+      gameTestButton.disabled = false;
+      setGameMetricText(true);
+      gameFeedback.textContent = "Test complete. Check the tune for a pass/fail result, or adjust and run another test.";
+    }
+
+    gamePlaybackFrame = window.requestAnimationFrame(step);
   }
 
   function selectGameLevel(index) {
     if (index > gameProgress.highestUnlocked) return;
+    cancelGamePlayback();
     gameLevelIndex = clamp(index, 0, gameLevels.length - 1);
     const level = currentGameLevel();
     const saved = gameProgress.best[level.id]?.params;
     gameParams = { ...level.initial, ...(saved || {}) };
+    gameHasTestRun = false;
     renderGame(false);
   }
 
   function resetGameLevel() {
+    cancelGamePlayback();
     gameParams = { ...currentGameLevel().initial };
+    gameHasTestRun = false;
     renderGame(false);
   }
 
@@ -577,12 +639,16 @@
     const related = gameInputs.filter((input) => input.dataset.gameParam === name);
     const min = Number(related[0].min);
     const max = Number(related[0].max);
+    cancelGamePlayback();
     gameParams[name] = clamp(Number(rawValue), min, max);
+    gameHasTestRun = false;
     renderGame(false);
   }
 
   function checkGameTune() {
+    cancelGamePlayback();
     const passed = isGamePassing();
+    setGameMetricText(true);
     gameFeedback.textContent = gameFeedbackText();
     gameFeedback.classList.toggle("is-pass", passed);
     gameFeedback.classList.toggle("is-fail", !passed);
@@ -627,6 +693,7 @@
   gameLevelButtons.forEach((button) => {
     button.addEventListener("click", () => selectGameLevel(Number(button.dataset.gameLevel)));
   });
+  gameTestButton.addEventListener("click", startGameTestRun);
   gameCheckButton.addEventListener("click", checkGameTune);
   gameResetButton.addEventListener("click", resetGameLevel);
   gameNextButton.addEventListener("click", () => selectGameLevel(Math.min(gameLevelIndex + 1, gameLevels.length - 1)));

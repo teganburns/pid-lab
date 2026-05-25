@@ -667,14 +667,16 @@ select {
   color: #ffffff;
 }
 
+.game-actions [data-game-action="check"] {
+  border-color: #b8c5d6;
+  background: #ffffff;
+  color: var(--ink);
+}
+
 .game-actions button:disabled {
   cursor: not-allowed;
   color: #8a95a3;
   background: var(--surface);
-}
-
-.game-actions button:first-child {
-  grid-column: 1 / -1;
 }
 
 .controls-panel {

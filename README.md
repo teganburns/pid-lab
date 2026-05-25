@@ -2,6 +2,10 @@
 
 A static local web app for learning how PID control loops work.
 
+## Live Site
+
+Visit the app at https://teganburns.github.io/pid-lab/
+
 The app includes:
 
 - P, I, and D explanation cards

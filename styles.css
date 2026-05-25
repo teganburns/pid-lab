@@ -442,9 +442,13 @@ select {
 
 .control {
   display: grid;
-  grid-template-columns: 132px minmax(120px, 1fr) 94px;
-  gap: 14px;
+  grid-template-columns: minmax(108px, 0.95fr) minmax(82px, 1fr) minmax(70px, 82px);
+  gap: 10px;
   align-items: center;
+}
+
+.control > * {
+  min-width: 0;
 }
 
 .control label {
@@ -468,6 +472,8 @@ select {
 
 .control input[type="number"] {
   width: 100%;
+  max-width: 82px;
+  justify-self: end;
   padding: 8px 9px;
   font-weight: 700;
 }
@@ -814,8 +820,8 @@ input:focus {
   }
 
   .control {
-    grid-template-columns: 48px minmax(120px, 1fr) 62px;
-    gap: 6px;
+    grid-template-columns: minmax(82px, 0.8fr) minmax(108px, 1fr) 62px;
+    gap: 8px;
   }
 
   .control label {

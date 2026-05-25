@@ -65,6 +65,21 @@
             <p>Predicts where the error is heading by reacting to rate of change. More Kd can damp overshoot but can amplify noise.</p>
           </article>
         </div>
+
+        <div class="shorthand-grid" aria-label="PID shorthand explanations">
+          <article class="shorthand-card">
+            <strong>SP - Setpoint</strong>
+            <p>The target value the loop is trying to reach. If SP is 1.00, the controller keeps adjusting output until the process variable settles near 1.00.</p>
+          </article>
+          <article class="shorthand-card">
+            <strong>D - Derivative</strong>
+            <p>The rate-of-change term. It reacts to how fast the error is moving, which can slow overshoot and smooth an aggressive response.</p>
+          </article>
+          <article class="shorthand-card">
+            <strong>PD - Proportional-Derivative</strong>
+            <p>A controller using P and D without integral action. PD responds quickly and adds damping, but it may leave a steady offset if the plant needs integral correction.</p>
+          </article>
+        </div>
       </section>
 
       <div class="workbench">
